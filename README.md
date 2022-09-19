@@ -64,23 +64,23 @@ This demonstration assumes you will install RHACM on an OpenShift on x86 cluster
 
 1. From the Hub OpenShift cluster, navigate to the OperatorHub and search for Red Hat Advanced Cluster Management.
 
-1. Click the Install button
+2. Click the Install button
 
-1. Select your desired Update Channel. Typically the latest version is the best choice.
+3. Select your desired Update Channel. Typically the latest version is the best choice.
 
-1. Leave the default settings for the remaining options and click Install.
+4. Leave the default settings for the remaining options and click Install.
 
-  ![rhacm-install-options](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-install-options.png)
+    ![rhacm-install-options](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-install-options.png)
 
-1. Once the operator is installed, click the Create MultiClusterHub button.
+5. Once the operator is installed, click the Create MultiClusterHub button.
 
-  If you have navigated away from the installation page, you can find this button by navigating in the OCP console to Administrator -> Operators -> Installed Operators -> Advanced Cluster Management for Kubernetes.
+    If you have navigated away from the installation page, you can find this button by navigating in the OCP console to Administrator -> Operators -> Installed Operators -> Advanced Cluster Management for Kubernetes.
 
 1. Leave the default options and click the Create button.
 
 2. After installing the MultiClusterHub, access the RHACM console from the OpenShift console by clicking on the Administrator dropdown and changing to Advanced Cluster Management.
 
-  ![access-rhacm](https://raw.githubusercontent.com/mmondics/media/main/images/access-rhacm.png)
+    ![access-rhacm](https://raw.githubusercontent.com/mmondics/media/main/images/access-rhacm.png)
 
 1. Log in with your OpenShift credentials.
 
@@ -90,53 +90,53 @@ This demonstration assumes you will install RHACM on an OpenShift on x86 cluster
 
 1. In the RHACM console, navigate to Infrastructure -> Clusters.
 
-  RHACM is capable of both *creating new OpenShift clusters*, and *importing existing OpenShift clusters*. In this case, because [you already have](#prerequisites) an existing OpenShift on IBM zSystems cluster, you will be importing it.
+    RHACM is capable of both *creating new OpenShift clusters*, and *importing existing OpenShift clusters*. In this case, because [you already have](#prerequisites) an existing OpenShift on IBM zSystems cluster, you will be importing it.
 
 1. Click the Import Cluster button.
 
 1. Provide a distinguishable name for the managed IBM zSystems cluster. 
 
-  For example, because the IBM zSystems cluster used when developing this demo is named `atsocpd2`, a distinguishable name would be `atsocpd2-s390x`.
+    For example, because the IBM zSystems cluster used when developing this demo is named `atsocpd2`, a distinguishable name would be `atsocpd2-s390x`.
 
 1. Next, select Run import commands manually for the Import mode.
 
-  There are other ways to import a cluster as well, with a server URL and token or a Kubeconfig, but the end result will be the same.
+    There are other ways to import a cluster as well, with a server URL and token or a Kubeconfig, but the end result will be the same.
 
 1. Click the next button.
 
 1. Skip the automation page. 
 
-  As mentioned in a previous section, RHACM supports the use of Ansible playbooks to run at different stages of the cluster lifecycle. This integration allows for customization or remediation of OpenShift clusters using Ansible playbooks. This is outside the scope of this demonstration, however cool it is.
+    As mentioned in a previous section, RHACM supports the use of Ansible playbooks to run at different stages of the cluster lifecycle. This integration allows for customization or remediation of OpenShift clusters using Ansible playbooks. This is outside the scope of this demonstration, however cool it is.
 
 1. On the Review page, click the Generate command button.
 
-  You will be taken to a new page for the yet-to-be imported OpenShift on IBM zSystems cluster. 
+    You will be taken to a new page for the yet-to-be imported OpenShift on IBM zSystems cluster. 
 
 1. Log in to your managed OpenShift on IBM zSystems cluster using the `oc` command line. 
 
 1. Click the Copy command button from the RHACM console, and paste it into your CLI session where you are logged into OpenShift.
 
-  This will paste a *quite* long command made up of base64 encoded information.
+    This will paste a *quite* long command made up of base64 encoded information.
 
-  After the commmand runs, you will see various objects created in the managed cluster:
+    After the commmand runs, you will see various objects created in the managed cluster:
 
-  ```text
-  customresourcedefinition.apiextensions.k8s.io/klusterlets.operator.open-cluster-management.io created
-  namespace/open-cluster-management-agent created
-  serviceaccount/klusterlet created
-  clusterrole.rbac.authorization.k8s.io/klusterlet configured
-  clusterrole.rbac.authorization.k8s.io/open-cluster-management:klusterlet-admin-aggregate-clusterrole unchanged
-  clusterrolebinding.rbac.authorization.k8s.io/klusterlet unchanged
-  deployment.apps/klusterlet created
-  secret/bootstrap-hub-kubeconfig created
-  klusterlet.operator.open-cluster-management.io/klusterlet created
-  ```
+    ```text
+    customresourcedefinition.apiextensions.k8s.io/klusterlets.operator.open-cluster-management.io created
+    namespace/open-cluster-management-agent created
+    serviceaccount/klusterlet created
+    clusterrole.rbac.authorization.k8s.io/klusterlet configured
+    clusterrole.rbac.authorization.k8s.io/open-cluster-management:klusterlet-admin-aggregate-clusterrole unchanged
+    clusterrolebinding.rbac.authorization.k8s.io/klusterlet unchanged
+    deployment.apps/klusterlet created
+    secret/bootstrap-hub-kubeconfig created
+    klusterlet.operator.open-cluster-management.io/klusterlet created
+    ```
 
-  And after a minute or so, you will see the IBM zSystems cluster information start to populate the RHACM console.
+    And after a minute or so, you will see the IBM zSystems cluster information start to populate the RHACM console.
 
-  ![rhacm-s390x-imported](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-s390x-imported.png)
+    ![rhacm-s390x-imported](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-s390x-imported.png)
 
-  RHACM can now manage this OpenShift on IBM zSystems cluster by updating it, hibernating nodes, deploying applications to it, deploying infrastructure or configuration changes to it, enforcing govenance rules and all of the other great capabilities provided by RHACM.
+    RHACM can now manage this OpenShift on IBM zSystems cluster by updating it, hibernating nodes, deploying applications to it, deploying infrastructure or configuration changes to it, enforcing govenance rules and all of the other great capabilities provided by RHACM.
 
 ## Deploying Applications across Multiarchitecture OpenShift Clusters
 
