@@ -192,8 +192,139 @@ Subscriptions have the added responsibility of managing *where* the source repos
 
 Now that you know RHACM Applications and their components, next you will create one from the RHACM console.
 
+## About the Sample Application
+
+The application you will be deploying to the managed clusters can be found here: <https://github.com/mmondics/national-parks>. This sample application includes frontend, backend, and database deployments that display a map of the locations of national parks in the United States. The [frontend](https://github.com/mmondics/national-parks/tree/main/source/parksmap-web) is written in Java and integrates a [Leaflet map](https://leafletjs.com/). The [backend](https://github.com/mmondics/national-parks/tree/main/source/nationalparks-py) is written in python and contains the name, coordinates, and more information about each national park. The [database](https://github.com/mmondics/national-parks/blob/main/yaml/separate/national-parks-backend.yaml) is simply a prebuilt MongoDB image that will be loaded with data from the backend.
+
+All three of these container images - frontend, backend, and database - have been built to be multiarchitecture. That is, the single container image manifest you will soon deploy will run on x86, IBM zSystems, or IBM Power OpenShift clusters (ARM64 as well, with the exception of the Mongo database).
+
+In this GitHub repository, you can find both the source code used to create the container images, as well as all of the Kubernetes YAML files for the various Deployments, Services, Routes, RoleBindings, and a Secret. Note that storing Secrets in your Git repository is **NOT** best practice and should not be done in a production environment. Do as I say, not as I do...
+
+There are two subdirectories under [yaml](https://github.com/mmondics/national-parks/tree/main/yaml) - `combined` and `separate`. `Combined` includes all of the Kubernetes objects together, while `separate` has two YAML files, one for the frontend applciation and one for the backend + database. The reason for this is simply because this application is used for various purpose where the frontend+backend sometimes need decoupled. In this demo, we will be using the `combined` YAML file.
+
 ## Deploying Applications across Multiarchitecture OpenShift Clusters
 
+First we need to do some preparation so that RHACM knows where to deploy the Application. 
+
+1. In the RHACM console, navigate to the clusters page. 
+
+1. For both of the two clusters, click the three dots to the far right and edit the labels.
+
+    ![rhacm-edit-labels](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-edit-labels.png)
+
+1. Add a new label `demo=multiarch`, hit tab, and click Save. 
+
+    You should see the new label added to the list.
+
+2. Repeat for the second cluster.
+
+3. In the RHACM console, navigate to the Applications page, click the Create application button, and Select Subscription.
+
+    ![rhacm-applications](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-applications.png)
+
+    *ApplicationSets* are a subproject of ArgoCD and work very similarly to Subscriptions. Thus they are a GitOps-native object that is supported by RHACM. However, they require ArgoCD to be deployed to each OpenShift cluster so they will not be used in this demonstration.
+
+4. For Name, enter `national-parks-multiarch`
+
+5. For Namespace, enter `national-parks-rhacm`
+
+    Because you most likely do not have projects with this name, they will be created. This is only possible to do if you have cluster-admin authority.
+
+6. For Repository type, select Git.
+
+7. For URL, enter `https://github.com/mmondics/national-parks`
+
+1. For Path, enter `yaml/combined`
+
+2. Under Select clusters for application deployment, for Label, enter `demo`, and for Value, enter `multiarch`. 
+
+    This will create a Placement for the two clusters you labeled with `demo=multiarch`.
+
+    All other options can be left blank or as their defaults. If you have the YAML option on, you will have noticed the YAML form on the right being filled out based on the values you provided.
+
+3.  Click the Create button in the top-right.
+
+    Shortly after creating the Application, you will be taken to a new screen showing its status and some other details.
+
+    ![rhacm-application-overview](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-application-overview.png)
+
+1. Click on the Topology tab.
+
+    If you did everything correctly, you should see a topology view of all of the Application components created similar to the image below.
+
+    ![rhacm-application-topology]https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-application-topology.png
+
+    From this view, you can see the name, type, status, and count of each object created.
+
+    For example, zooming in on the Route named `parksmap`.
+
+    ![rhacm-application-topology-zoomed]https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-application-topology-zoomed.png
+
+    You see that there are two instances of the parksmap route (one on each OCP cluster) and both are healthy.
+
+1. Click on some of the topology icons to see the information they provide. 
+
+    Different object types provide information relevant to their function. For example, pods will provide access to pod logs while routes will provide access to the route URL. 
+
+    You will also see these objects are created in the two OpenShift clusters.
+
+1. While logged in with the `oc` CLI, run the following command to see the objects in each OpenShift cluster.
+
+    `oc get all -n national-parks-rhacm`
+
+    ```text
+    ➜  ~ oc get pod -n national-parks-rhacm
+    NAME                                     READY   STATUS    RESTARTS   AGE
+    mongodb-nationalparks-569d8f967b-xd4zq   1/1     Running   0          119m
+    nationalparks-6f4b8858d5-d5q75           1/1     Running   0          119m
+    parksmap-84c87669d7-g7f5t                1/1     Running   0          119m
+    ➜  ~ oc get all -n national-parks-rhacm
+    NAME                                         READY   STATUS    RESTARTS   AGE
+    pod/mongodb-nationalparks-569d8f967b-xd4zq   1/1     Running   0          125m
+    pod/nationalparks-6f4b8858d5-d5q75           1/1     Running   0          125m
+    pod/parksmap-84c87669d7-g7f5t                1/1     Running   0          125m
+
+    NAME                            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)     AGE
+    service/mongodb-nationalparks   ClusterIP   172.30.212.76   <none>        27017/TCP   125m
+    service/nationalparks           ClusterIP   172.30.46.241   <none>        8080/TCP    125m
+    service/parksmap                ClusterIP   172.30.28.73    <none>        8080/TCP    125m
+
+    NAME                                    READY   UP-TO-DATE   AVAILABLE   AGE
+    deployment.apps/mongodb-nationalparks   1/1     1            1           125m
+    deployment.apps/nationalparks           1/1     1            1           125m
+    deployment.apps/parksmap                1/1     1            1           125m
+
+    NAME                                               DESIRED   CURRENT   READY   AGE
+    replicaset.apps/mongodb-nationalparks-569d8f967b   1         1         1       125m
+    replicaset.apps/nationalparks-6f4b8858d5           1         1         1       125m
+    replicaset.apps/parksmap-84c87669d7                1         1         1       125m
+
+    NAME                                     HOST/PORT                                              PATH   SERVICES        PORT       TERMINATION   WILDCARD
+    route.route.openshift.io/nationalparks   nationalparks-national-parks-rhacm.apps.atsocpd2.dmz          nationalparks   8080-tcp                 None
+    route.route.openshift.io/parksmap        parksmap-national-parks-rhacm.apps.atsocpd2.dmz        /      parksmap        8080-tcp                 None
+    ```
+
+    *Hint*: when working with multiple OpenShift clusters, you can easily direct your `oc` commands at a specific cluster by using the `--context` flag. This way you don't need to log in and out of individual clusters when you want to change which one you're working with. You can also rename your context to something easier to remember to and type.
+
+    ```text
+    ➜  ~ oc config get-contexts | grep x2pn
+          debugging-nodes/api-x2pn-dmz:6443/mmondics                  api-x2pn-dmz:6443                  mmondics/api-x2pn-dmz:6443                                                         debugging-nodes
+          default/api-x2pn-dmz:6443/kube:admin                        api-x2pn-dmz:6443                  kube:admin/api-x2pn-dmz:6443                                                       default
+    ```
+
+    ```text
+    ➜  ~ oc config rename-context default/api-x2pn-dmz:6443/kube:admin x2pn
+    Context "default/api-x2pn-dmz:6443/kube:admin" renamed to "x2pn".
+
+    ➜  ~ oc --context x2pn -n national-parks-rhacm get pods
+    NAME                                    READY   STATUS    RESTARTS   AGE
+    mongodb-nationalparks-b47d5968b-qbpph   1/1     Running   0          136m
+    nationalparks-5d4647475f-fcc6m          1/1     Running   0          136m
+    parksmap-684fdf7bfc-hpxg2               1/1     Running   0          136m
+    ```
+2. Using either the RHACM topology view, the OpenShift console, or the `oc get routes` command, navigate to the parksmap (frontend) route for both the x86 and s390x versions of the national parks application.
+
+    !
 ## Deploying Infrastructure-as-a-Service across Multiarchitecture OpenShift Clusters
 
 ## Wrap Up
