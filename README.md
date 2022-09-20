@@ -15,6 +15,7 @@ The demonstration in this respository focuses on **consistent application and in
   - [Importing OpenShift Clusters into RHACM](#importing-openshift-clusters-into-rhacm)
   - [Exploring RHACM](#exploring-rhacm)
   - [Understanding RHACM Applications](#understanding-rhacm-applications)
+  - [About the Sample Application](#about-the-sample-application)
   - [Deploying Applications across Multiarchitecture OpenShift Clusters](#deploying-applications-across-multiarchitecture-openshift-clusters)
   - [Deploying Infrastructure-as-a-Service across Multiarchitecture OpenShift Clusters](#deploying-infrastructure-as-a-service-across-multiarchitecture-openshift-clusters)
   - [Wrap Up](#wrap-up)
@@ -252,13 +253,13 @@ First we need to do some preparation so that RHACM knows where to deploy the App
 
     If you did everything correctly, you should see a topology view of all of the Application components created similar to the image below.
 
-    ![rhacm-application-topology]https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-application-topology.png
+    ![rhacm-application-topology](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-application-topology.png)
 
     From this view, you can see the name, type, status, and count of each object created.
 
     For example, zooming in on the Route named `parksmap`.
 
-    ![rhacm-application-topology-zoomed]https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-application-topology-zoomed.png
+    ![rhacm-application-topology-zoomed](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-application-topology-zoomed.png)
 
     You see that there are two instances of the parksmap route (one on each OCP cluster) and both are healthy.
 
