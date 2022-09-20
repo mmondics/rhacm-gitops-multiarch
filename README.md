@@ -13,6 +13,7 @@ The demonstration in this respository focuses on **consistent application and in
   - [Understanding RHACM](#understanding-rhacm)
   - [Installing RHACM](#installing-rhacm)
   - [Importing OpenShift Clusters into RHACM](#importing-openshift-clusters-into-rhacm)
+  - [Exploring RHACM](#exploring-rhacm)
   - [Deploying Applications across Multiarchitecture OpenShift Clusters](#deploying-applications-across-multiarchitecture-openshift-clusters)
   - [Deploying Infrastructure-as-a-Service across Multiarchitecture OpenShift Clusters](#deploying-infrastructure-as-a-service-across-multiarchitecture-openshift-clusters)
   - [Wrap Up](#wrap-up)
@@ -137,6 +138,36 @@ This demonstration assumes you will install RHACM on an OpenShift on x86 cluster
     ![rhacm-s390x-imported](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-s390x-imported.png)
 
     RHACM can now manage this OpenShift on IBM zSystems cluster by updating it, hibernating nodes, deploying applications to it, deploying infrastructure or configuration changes to it, enforcing govenance rules and all of the other great capabilities provided by RHACM.
+
+## Exploring RHACM
+
+Before using RHACM to deploy an application to the managed OpenShift cluster, you should get more familiar with navigating the RHACM console. 
+
+1. Use the left-side menu to go back to the overall Clusters page.
+
+    ![rhacm-clusters](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-clusters.png)
+
+    Notice on this page that RHACM automatically identified the Status, Infrastructure, Version, and other information about the two clusters that it stored as labels. One thing to note - even though RHACM is running on an x86 architecture (VMware vSphere) cluster, it will have no problem managing and deploying to the IBM zSystems cluster.
+
+    The `local-cluster` listed on this page is the Hub cluster where RHACM is running. So you have a situation where RHACM can manage and deploy the OpenShift cluster that it is running on. 
+
+    From this page you can upgrade or hibernate/resume clusters. Updating clusters from RHACM makes it easier to be sure that clusters are all at the correct versions without having to log into each one individually. Hibernating clusters can be a good idea, especially for public-cloud based clusters, because it will temporarily shut down the cluster nodes when they arent needed, saving an organization money.
+
+    From this page, you can also put clusters into Cluster Sets or Cluster Pools. 
+
+    - Cluster Sets essentially group cluster resources together so that you can manage all of their resources with one set of role-based access controls. This can be useful for teams who need to use multiple clusters as if they were one single entity, and also allows for inter-cluster network connectivity with [Submariner](https://submariner.io/).
+
+    - Cluster Pools are pools of multiple clusters that can be made available for checkout by developers or for use by temporary workloads. When the clusters aren't checked out, they are in a hibernating state so as to reduce cloud provider cost.
+
+1. Navigate to the Overview page using the left-side menu.
+
+    On the Overview page, you can see overall information for all of the managed (and Hub) clusters. Although there are only two clusters involved for this demonstration, you can imagine how helpful it would be to find information about cluster fleet health and status if there were dozens, hundreds, or thousands of clusters being managed.
+
+    ![rhacm-overview](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-overview.png)
+
+    You might notice that RHACM has found zero applications in the two clusters. The reason for this is that an Application is a concept specific to RHACM - this is not an application in the sense of a deployment or pod running on an OpenShift cluster. 
+
+    You will learn more about Applications (and deploy one) in the next section.
 
 ## Deploying Applications across Multiarchitecture OpenShift Clusters
 
