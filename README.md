@@ -14,6 +14,7 @@ The demonstration in this respository focuses on **consistent application and in
   - [Installing RHACM](#installing-rhacm)
   - [Importing OpenShift Clusters into RHACM](#importing-openshift-clusters-into-rhacm)
   - [Exploring RHACM](#exploring-rhacm)
+  - [Understanding RHACM Applications](#understanding-rhacm-applications)
   - [Deploying Applications across Multiarchitecture OpenShift Clusters](#deploying-applications-across-multiarchitecture-openshift-clusters)
   - [Deploying Infrastructure-as-a-Service across Multiarchitecture OpenShift Clusters](#deploying-infrastructure-as-a-service-across-multiarchitecture-openshift-clusters)
   - [Wrap Up](#wrap-up)
@@ -165,9 +166,31 @@ Before using RHACM to deploy an application to the managed OpenShift cluster, yo
 
     ![rhacm-overview](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-overview.png)
 
-    You might notice that RHACM has found zero applications in the two clusters. The reason for this is that an Application is a concept specific to RHACM - this is not an application in the sense of a deployment or pod running on an OpenShift cluster. 
+    You might notice that RHACM has found zero applications in the two clusters. The reason for this is that an Application is a concept specific to RHACM - this is not an application in the sense of a OpenShift deployment or pod running on a cluster. 
 
-    You will learn more about Applications (and deploy one) in the next section.
+    You will learn more about RHACM Applications (and deploy one) in the next section.
+
+## Understanding RHACM Applications
+
+RHACM uses a combination of Kubernetes objects and its [own specific components](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html/about/welcome-to-red-hat-advanced-cluster-management-for-kubernetes#red-hat-advanced-cluster-management-for-kubernetes-terms) related to multicluster management. Just like Kubernetes objects, RHACM objects are defined in [YAML](https://www.redhat.com/en/topics/automation/what-is-yaml).
+
+For the next few explanations of terms, refer to the image below (from the [RHACM documentation](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#application-model-and-definitions).) You can also find more details about the RHACM application model at the same link.
+
+![rhacm-application-model](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-application-model.jpg)
+
+When deploying infrastructure-as-code or containerized Kubernetes applications with RHACM, the highest level resource is an **Application** (see how this can be confusing?). *A RHACM Application is used to group Kubernetes objects that make up an applicatio*n. RHACM can also discover Applications installed on managed OpenShift clusters that were deployed with the Red Hat GitOps or ArgoCD operators. In their YAML definitions, Applications refer to our next term, Subscriptions.
+
+**Subscriptions** are the RHACM object that allow clusters to *subscribe* to source repositories such as Git, Helm, or Object storage repositories. For this, Subscriptions refer to Channels.
+
+*Note*: This demonstration focuses on the GitOps approach to mutlicluster management, so Helm and Object storage are outside of the current scope. If you would like to learn more about them, you can read more [here](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#managing-apps-with-helm-cluster-repositories) and [here](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#managing-apps-with-object-storage-repositories).
+
+Subscriptions have the added responsibility of managing *where* the source repository objects will be deployed. For this, subscriptions refer to Placement Rules.
+
+**Channels** represent the Git repository that is the single "Source of Truth" discussed earlier in this demonstration. Supported Git repositories include [GitHub](https://github.com/), [GitLab](https://about.gitlab.com/), [Bitbucket](https://bitbucket.org/), and [Gogs](https://gogs.io/). You can also use private/entitled Git repositories in a seucre way by storing access credentials in a Kubernetes secret. 
+
+**Placement Rules** are used by RHACM to define which target clusters an Application will deploy to. This can be defined by specifying labels or Cluster Sets. 
+
+Now that you know RHACM Applications and their components, next you will create one from the RHACM console.
 
 ## Deploying Applications across Multiarchitecture OpenShift Clusters
 
