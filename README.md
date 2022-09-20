@@ -309,11 +309,8 @@ First we need to do some preparation so that RHACM knows where to deploy the App
 
     ```text
     ➜  ~ oc config get-contexts | grep x2pn
-          debugging-nodes/api-x2pn-dmz:6443/mmondics                  api-x2pn-dmz:6443                  mmondics/api-x2pn-dmz:6443                                                         debugging-nodes
           default/api-x2pn-dmz:6443/kube:admin                        api-x2pn-dmz:6443                  kube:admin/api-x2pn-dmz:6443                                                       default
-    ```
 
-    ```text
     ➜  ~ oc config rename-context default/api-x2pn-dmz:6443/kube:admin x2pn
     Context "default/api-x2pn-dmz:6443/kube:admin" renamed to "x2pn".
 
