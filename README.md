@@ -17,19 +17,21 @@ The demonstration in this respository focuses on **consistent application and in
   - [Understanding RHACM Applications](#understanding-rhacm-applications)
   - [About the Sample Application](#about-the-sample-application)
   - [Deploying Applications across Multiarchitecture OpenShift Clusters](#deploying-applications-across-multiarchitecture-openshift-clusters)
+  - [Automated Application Updates](#automated-application-updates)
   - [Deploying Infrastructure-as-a-Service across Multiarchitecture OpenShift Clusters](#deploying-infrastructure-as-a-service-across-multiarchitecture-openshift-clusters)
   - [Wrap Up](#wrap-up)
   - [More Resources](#more-resources)
 
 ## Prerequisites
 
-1. `oc` and `kubectl` CLIs installed. 
-2. OpenShift cluster on IBM zSystems or LinuxONE
-3. OpenShift cluster on x86-based infrastructure (on premises or in a public cloud)
+1. `oc` and `kubectl` CLIs installed.
+2. [GitHub](https://github.com/) account with basic knowledge of how to clone and edit repositories.
+3. OpenShift cluster on IBM zSystems or LinuxONE
+4. OpenShift cluster on x86-based infrastructure (on premises or in a public cloud)
    1. Alternatively, any platform listed as supported [here](https://access.redhat.com/articles/6968787)
-4. Meet the network connectivity requirements explained [here](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html/networking/index#doc-wrapper).
-5. Cluster administrator authority for both OpenShift clusters
-6. Basic OpenShift knowledge - how to log in to the console and CLI, navigation and use of each 
+5. Meet the network connectivity requirements explained [here](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html/networking/index#doc-wrapper).
+6. Cluster administrator authority for both OpenShift clusters
+7. Basic OpenShift knowledge - how to log in to the console and CLI, navigation and use of each 
    
 ## Background
 
@@ -233,23 +235,25 @@ First we need to do some preparation so that RHACM knows where to deploy the App
 
 6. For Repository type, select Git.
 
-7. For URL, enter `https://github.com/mmondics/national-parks`
+7. For URL, enter your clone of the following GitHub repository: `https://github.com/mmondics/national-parks`
+   
+    Note: you should use [your own clone](#prerequisites) of this repository because a later step will require that you edit a file.
 
-1. For Path, enter `yaml/combined`
+8. For Path, enter `yaml/combined`
 
-2. Under Select clusters for application deployment, for Label, enter `demo`, and for Value, enter `multiarch`. 
+9.  Under Select clusters for application deployment, for Label, enter `demo`, and for Value, enter `multiarch`. 
 
     This will create a Placement for the two clusters you labeled with `demo=multiarch`.
 
     All other options can be left blank or as their defaults. If you have the YAML option on, you will have noticed the YAML form on the right being filled out based on the values you provided.
 
-3.  Click the Create button in the top-right.
+10. Click the Create button in the top-right.
 
     Shortly after creating the Application, you will be taken to a new screen showing its status and some other details.
 
     ![rhacm-application-overview](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-application-overview.png)
 
-1. Click on the Topology tab.
+11. Click on the Topology tab.
 
     If you did everything correctly, you should see a topology view of all of the Application components created similar to the image below.
 
@@ -263,13 +267,13 @@ First we need to do some preparation so that RHACM knows where to deploy the App
 
     You see that there are two instances of the parksmap route (one on each OCP cluster) and both are healthy.
 
-1. Click on some of the topology icons to see the information they provide. 
+12. Click on some of the topology icons to see the information they provide. 
 
     Different object types provide information relevant to their function. For example, pods will provide access to pod logs while routes will provide access to the route URL. 
 
     You will also see these objects are created in the two OpenShift clusters.
 
-1. While logged in with the `oc` CLI, run the following command to see the objects in each OpenShift cluster.
+13. While logged in with the `oc` CLI, run the following command to see the objects in each OpenShift cluster.
 
     `oc get all -n national-parks-rhacm`
 
@@ -320,10 +324,100 @@ First we need to do some preparation so that RHACM knows where to deploy the App
     nationalparks-5d4647475f-fcc6m          1/1     Running   0          136m
     parksmap-684fdf7bfc-hpxg2               1/1     Running   0          136m
     ```
-2. Using either the RHACM topology view, the OpenShift console, or the `oc get routes` command, navigate to the parksmap (frontend) route for both the x86 and s390x versions of the national parks application.
+14. Using either the RHACM topology view, the OpenShift console, or the `oc get routes` command, navigate to the nationalparks (backend) route for both the x86 and s390x versions of the national parks application.
 
-    !
+    You should see a single line of text saying `Welcome to the National Parks data service.`
+
+15. For both routes, append `/ws/data/load` to the end of each URL
+
+    For example, your routes should be something like:
+    
+     `nationalparks-national-parks-rhacm.apps.example.com/ws/data/load`
+    
+16. If done correctly, you should see some JSON returned that says `"Items inserted in database: 204"`.
+
+17. Remember to repeat this for both nationalparks routes.
+
+18. Now navigate to the parksmap (frontend) routes either from the RHACM topology, OpenShift console, or by finding the route URL from the `oc` CLI.
+
+    ![national-parks-loaded-home](https://raw.githubusercontent.com/mmondics/media/main/images/national-parks-loaded-home.png)
+
+    Notice that you have the idential frontends, backends, databases, and data even though one cluster is running on x86, and the other is on IBM zSystems. 
+
+    You can interact with the application by clicking on markers to see information about each national park or change the map type with the options in the top-left corner.
+
+## Automated Application Updates
+
+Now assume there's a developer who needs to push an update to the application. This developer does not have access to OpenShift or know the first thing about deploying an application on Kubernetes - all they know is how to update the source code, push that update through the containerization process (varies by organization), and have that change reflected in the Git repository.
+
+For this demo, you do not need to make any code changes. A minor code change has already been made and a new container image has been built with the update, so all you need to do is update the YAML file to reference the new image.
+
+1. In your fork of the national parks GitHub repository (<https://github.com/mmondics/national-parks>), navigate to `yaml/combined/` and edit the YAML file `national-parks-combined.yaml`.
+
+    Edit line 35 to use the tag `v2-update`, rather than `latest`.
+
+    The edited line and those surrounding it should look like the following:
+
+    ```yaml
+        - name: parksmap
+          image: >-
+            quay.io/mmondics/national-parks-frontend:latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+    ```
+
+    When you are done editing the file, commit and push the update.
+
+1. Navigate back to your RHACM topology view for the `national-parks-multiarch` Application and find the Pod named `parksmap`.
+
+    Depending how quickly you navigated back to the topology, you might catch the `parksmap` Pod with a warning symbol on it, indicating that there is an issue. If you don't catch it, here is what it looks like:
+
+    ![rhacm-pod-issue](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-pod-issue.png)
+
+    Navigate back to one of the frontend parksmap routes (where you can see the map) and notice the updated title.
+
+    ![national-parks-rhacm-update](https://raw.githubusercontent.com/mmondics/media/main/images/national-parks-rhacm-update.png)
+
+    The updated application has been pushed to the two managed OpenShift clusters with a simple Git commit. No developer had to log into OpenShift to deploy the update, and no administrator had to provide access or do anything to let this update go through.
+
 ## Deploying Infrastructure-as-a-Service across Multiarchitecture OpenShift Clusters
+
+Now you might be thinking, "That's cool, but that's just an application. I manage OpenShift cluster, not applications, and there's no way infrastructure deployments or updates could be that easy." 
+
+Fortunately with RHACM and GitOps, it really is that easy. Because many Kubernetes infrastructure components are configured with YAML, RHACM can manage them in the same way it managed the application in the previous section. 
+
+What are some infrastructure configurations we could manage with RHACM?
+
+- Control Plane or Compute Node customizations
+- Persistent storage configuration
+- Making sure certain operators are installed
+- Role-based access control configuration
+- etcd encryption
+- LDAP (or other authentication provider) configuration
+- Resource Quotas
+- Console customizations
+- Log forwarding configurations
+- Alerting rules
+- Jobs and CronJobs
+- Use your imagination...
+
+THe list goes on and on. Because we configure these infrastructure components with YAML, we can simply store that YAML in Git and deploy it the same way.
+
+1. Create a new Application (Subscription) in RHACM with the following parameters:
+
+    - Name: `cluster-configs`
+    - Namespace: `cluster-configs-rhacm`
+    - Repository type: `Git`
+    - URL: `https://github.com/mmondics/openshift-gitops-getting-started`
+    - Branch: `main`
+    - Path: `cluster/console`
+    - Label: `demo`
+    - Value: `multiarch`
+
+    And click Create.
+
+
 
 ## Wrap Up
 
