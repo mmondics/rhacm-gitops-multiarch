@@ -367,6 +367,8 @@ For this demo, you do not need to make any code changes. A minor code change has
 
     ![national-parks-rhacm-update](images/national-parks-rhacm-update.png)
 
+    If you do not see the updated title, you may have cached data on the webpage. Try opening the URL in a private browser.
+
     The updated application has been pushed to the two managed OpenShift clusters with a simple Git commit. No developer had to log into OpenShift to deploy the update, and no administrator had to provide access or do anything to let this update go through.
 
 ## Deploying Infrastructure-as-a-Service across Multiarchitecture OpenShift Clusters
