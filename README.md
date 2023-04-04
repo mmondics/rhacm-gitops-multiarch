@@ -39,19 +39,19 @@ As IT organizations adopt the hybrid multicloud model, Kubernetes clusters have 
 
 **There comes a point in hybrid multicloud environments where cloud administrators needs some automation and a single source of truth for application management and maintenance.**
 
-![clusters-vs-difficulty](clusters-vs-difficulty.drawio.png)
+![clusters-vs-difficulty](images/clusters-vs-difficulty.drawio.png)
 
 Another scenario - forget the applications... how can the cloud administrator make sure that all three (dozen? (hundred? (thousand??))) clusters themselves are consistent? Are they expected to manually configure each cluster for persistent storage, required operators, LDAP integrations, etcd encryption, role-based access control, and the hundred other customizations performed when a new cluster is created? And again, what if something changes? What if a new version of an operator is released and it needs to be installed on each cluster? What if someone leaves the company and their access needs revoked from every cluster?
 
 **As with applications running in hybrid cloud environments, the Kubernetes clusters themselves require a standardized and automated model to maintain consistency.**
 
-![cluster-consistency](cluster-consistency.drawio.png)
+![cluster-consistency](images/cluster-consistency.drawio.png)
 
 ## Understanding RHACM
 
 RHACM can help with both of the scenarios described above. Cluster administrators or Site Reliability Engineers (SREs) can manage both *applications* and Kubernetes *infrastructure* from a single pane of glass. RHACM supports GitOps methodology where a Git repository (such as GitHub) acts as the single source of truth for application and infrastructure code, then RHACM deploys the contents of the Git repository to desired clusters through a system of label matching. 
 
-![rhacm-drawio](rhacm.drawio(2)(1).png)
+![rhacm-drawio](images/rhacm.drawio.png)
 
 *You may need to open this full image in a new tab to see it better.*
 
@@ -75,7 +75,7 @@ This demonstration assumes you will install RHACM on an OpenShift on x86 cluster
 
 4. Leave the default settings for the remaining options and click Install.
 
-    ![rhacm-install-options](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-install-options.png)
+    ![rhacm-install-options](images/rhacm-install-options.png)
 
 5. Once the operator is installed, click the Create MultiClusterHub button.
 
@@ -85,7 +85,7 @@ This demonstration assumes you will install RHACM on an OpenShift on x86 cluster
 
 2. After installing the MultiClusterHub, access the RHACM console from the OpenShift console by clicking on the Administrator dropdown and changing to Advanced Cluster Management.
 
-    ![access-rhacm](https://raw.githubusercontent.com/mmondics/media/main/images/access-rhacm.png)
+    ![access-rhacm](images/access-rhacm.png)
 
 1. Log in with your OpenShift credentials.
 
@@ -143,7 +143,7 @@ This demonstration assumes you will install RHACM on an OpenShift on x86 cluster
 
     And after a minute or so, you will see the IBM zSystems cluster information start to populate the RHACM console.
 
-    ![rhacm-s390x-imported](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-s390x-imported.png)
+    ![rhacm-s390x-imported](images/rhacm-s390x-imported.png)
 
     RHACM can now manage this OpenShift on IBM zSystems cluster by updating it, hibernating nodes, deploying applications to it, deploying infrastructure or configuration changes to it, enforcing govenance rules and all of the other great capabilities provided by RHACM.
 
@@ -153,7 +153,7 @@ Before using RHACM to deploy an application to the managed OpenShift cluster, yo
 
 1. Use the left-side menu to go back to the overall Clusters page.
 
-    ![rhacm-clusters](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-clusters.png)
+    ![rhacm-clusters](images/rhacm-clusters.png)
 
     Notice on this page that RHACM automatically identified the Status, Infrastructure, Version, and other information about the two clusters that it stored as labels. One thing to note - even though RHACM is running on an x86 architecture (VMware vSphere) cluster, it will have no problem managing and deploying to the IBM zSystems cluster.
 
@@ -171,7 +171,7 @@ Before using RHACM to deploy an application to the managed OpenShift cluster, yo
 
     On the Overview page, you can see overall information for all of the managed (and Hub) clusters. Although there are only two clusters involved for this demonstration, you can imagine how helpful it would be to find information about cluster fleet health and status if there were dozens, hundreds, or thousands of clusters being managed.
 
-    ![rhacm-overview](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-overview.png)
+    ![rhacm-overview](images/rhacm-overview.png)
 
     You might notice that RHACM has found zero applications in the two clusters. The reason for this is that an Application is a concept specific to RHACM - this is not an application in the sense of a OpenShift deployment or pod running on a cluster. 
 
@@ -183,7 +183,7 @@ RHACM uses a combination of Kubernetes objects and its [own specific components]
 
 For the next few explanations of terms, refer to the image below (from the [RHACM documentation](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#application-model-and-definitions).) You can also find more details about the RHACM application model at the same link.
 
-![rhacm-application-model](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-application-model.jpg)
+![rhacm-application-model](images/rhacm-application-model.jpg)
 
 When deploying infrastructure-as-code or containerized Kubernetes applications with RHACM, the highest level resource is an **Application** (see how this can be confusing?). *A RHACM Application is used to group Kubernetes objects that make up an applicatio*n. RHACM can also discover Applications installed on managed OpenShift clusters that were deployed with the Red Hat GitOps or ArgoCD operators. In their YAML definitions, Applications refer to our next term, Subscriptions.
 
@@ -217,7 +217,7 @@ First we need to do some preparation so that RHACM knows where to deploy the App
 
 1. For both of the two clusters, click the three dots to the far right and edit the labels.
 
-    ![rhacm-edit-labels](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-edit-labels.png)
+    ![rhacm-edit-labels](images/rhacm-edit-labels.png)
 
 1. Add a new label `demo=multiarch`, hit tab, and click Save. 
 
@@ -227,7 +227,7 @@ First we need to do some preparation so that RHACM knows where to deploy the App
 
 3. In the RHACM console, navigate to the Applications page, click the Create application button, and Select Subscription.
 
-    ![rhacm-applications](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-applications.png)
+    ![rhacm-applications](images/rhacm-applications.png)
 
     *ApplicationSets* are a subproject of ArgoCD and work very similarly to Subscriptions. Thus they are a GitOps-native object that is supported by RHACM. However, they require ArgoCD to be deployed to each OpenShift cluster so they will not be used in this demonstration.
 
@@ -255,19 +255,19 @@ First we need to do some preparation so that RHACM knows where to deploy the App
 
     Shortly after creating the Application, you will be taken to a new screen showing its status and some other details.
 
-    ![rhacm-application-overview](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-application-overview.png)
+    ![rhacm-application-overview](images/rhacm-application-overview.png)
 
 11. Click on the Topology tab.
 
     If you did everything correctly, you should see a topology view of all of the Application components created similar to the image below.
 
-    ![rhacm-application-topology](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-application-topology.png)
+    ![rhacm-application-topology](images/rhacm-application-topology.png)
 
     From this view, you can see the name, type, status, and count of each object created.
 
     For example, zooming in on the Route named `parksmap`.
 
-    ![rhacm-application-topology-zoomed](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-application-topology-zoomed.png)
+    ![rhacm-application-topology-zoomed](images/rhacm-application-topology-zoomed.png)
 
     You see that there are two instances of the parksmap route (one on each OCP cluster) and both are healthy.
 
@@ -344,7 +344,7 @@ First we need to do some preparation so that RHACM knows where to deploy the App
 
 18. Now navigate to the parksmap (frontend) routes either from the RHACM topology, OpenShift console, or by finding the route URL from the `oc` CLI.
 
-    ![national-parks-loaded-home](https://raw.githubusercontent.com/mmondics/media/main/images/national-parks-loaded-home.png)
+    ![national-parks-loaded-home](images/national-parks-loaded-home.png)
 
     Notice that you have the idential frontends, backends, databases, and data even though one cluster is running on x86, and the other is on IBM zSystems. 
 
@@ -377,11 +377,11 @@ For this demo, you do not need to make any code changes. A minor code change has
 
     Depending how quickly you navigated back to the topology, you might catch the `parksmap` Pod with a warning symbol on it, indicating that there is an issue. If you don't catch it, here is what it looks like:
 
-    ![rhacm-pod-issue](https://raw.githubusercontent.com/mmondics/media/main/images/rhacm-pod-issue.png)
+    ![rhacm-pod-issue](images/rhacm-pod-issue.png)
 
     Navigate back to one of the frontend parksmap routes (where you can see the map) and notice the updated title.
 
-    ![national-parks-rhacm-update](https://raw.githubusercontent.com/mmondics/media/main/images/national-parks-rhacm-update.png)
+    ![national-parks-rhacm-update](images/national-parks-rhacm-update.png)
 
     The updated application has been pushed to the two managed OpenShift clusters with a simple Git commit. No developer had to log into OpenShift to deploy the update, and no administrator had to provide access or do anything to let this update go through.
 
@@ -423,13 +423,13 @@ The list goes on and on. Because we configure these infrastructure components wi
 
     Once all of the objects are deployed and have a green check mark, the two target OCP clusters have been modified.
 
-    ![cluster-configs](https://raw.githubusercontent.com/mmondics/media/main/images/cluster-configs.png)
+    ![cluster-configs](images/cluster-configs.png)
 
 1. Navigate to the managed OpenShift on IBM zSystems cluster.
    
 1. In the top bar, click the button with the 9 squares in a grid.
 
-    ![console-2links-2](https://raw.githubusercontent.com/mmondics/media/main/images/console-links-2.png)
+    ![console-links-2](images/console-links-2.png)
 
     The two bottom links have been added to the target clusters by creating `ConsoleLink` objects in the OCP cluster. You can see their configuration by looking at the [console-link.yaml](/cluster/console/console-link.yaml), or by running `oc get consolelink -oyaml` in a CLI.
 
