@@ -425,7 +425,21 @@ The list goes on and on. Because we configure these infrastructure components wi
 
     ![cluster-configs](https://raw.githubusercontent.com/mmondics/media/main/images/cluster-configs.png)
 
+1. Navigate to the managed OpenShift on IBM zSystems cluster.
+   
+1. In the top bar, click the button with the 9 squares in a grid.
+
+    ![console-2links-2](https://raw.githubusercontent.com/mmondics/media/main/images/console-links-2.png)
+
+    The two bottom links have been added to the target clusters by creating `ConsoleLink` objects in the OCP cluster. You can see their configuration by looking at the [console-link.yaml](/cluster/console/console-link.yaml), or by running `oc get consolelink -oyaml` in a CLI.
 
 ## Wrap Up
 
+In this demonstration, you have seen how Red Hat Advanced Cluster management can deploy and manage both OpenShift clusters as well as applications and infrastructure running on those clusters whether the cluster is running on IBM zSystems, x86, public cloud, IBM Power, or ARM64. The standardized tooling and GitOps approach simplify the ever increasing complexity of hybrid multicloud environments.
+
 ## More Resources
+
+- [RHACM Documentation](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.7)
+- [RHACM Product Page](https://www.redhat.com/en/technologies/management/advanced-cluster-management)
+- [What is GitOps?](https://www.redhat.com/en/topics/devops/what-is-gitops)
+- [Understanding GitOps with Red Hat Advanced Cluster Management](https://cloud.redhat.com/blog/understanding-gitops-with-red-hat-advanced-cluster-management?extIdCarryOver=true&sc_cid=701f2000001Css5AAC)
