@@ -117,29 +117,9 @@ This demonstration assumes you will install RHACM on an OpenShift on x86 cluster
 
     As mentioned in a previous section, RHACM supports the use of Ansible playbooks to run at different stages of the cluster lifecycle. This integration allows for customization or remediation of OpenShift clusters using Ansible playbooks. This is outside the scope of this demonstration, however cool it is.
 
-5. On the Review page, click the Generate command button.
+5. On the Review page, click the Import button.
 
     You will be taken to a new page for the yet-to-be imported OpenShift on IBM zSystems cluster. 
-
-6. Log in to your managed OpenShift on IBM zSystems cluster using the `oc` command line. 
-
-7. Click the Copy command button from the RHACM console, and paste it into your CLI session where you are logged into OpenShift.
-
-    This will paste a *quite* long command made up of base64 encoded information.
-
-    After the commmand runs, you will see various objects created in the managed cluster:
-
-    ```text
-    customresourcedefinition.apiextensions.k8s.io/klusterlets.operator.open-cluster-management.io created
-    namespace/open-cluster-management-agent created
-    serviceaccount/klusterlet created
-    clusterrole.rbac.authorization.k8s.io/klusterlet configured
-    clusterrole.rbac.authorization.k8s.io/open-cluster-management:klusterlet-admin-aggregate-clusterrole unchanged
-    clusterrolebinding.rbac.authorization.k8s.io/klusterlet unchanged
-    deployment.apps/klusterlet created
-    secret/bootstrap-hub-kubeconfig created
-    klusterlet.operator.open-cluster-management.io/klusterlet created
-    ```
 
     And after a minute or so, you will see the IBM zSystems cluster information start to populate the RHACM console.
 
