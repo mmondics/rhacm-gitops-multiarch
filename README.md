@@ -421,6 +421,9 @@ The list goes on and on. Because we configure these infrastructure components wi
 
     And click Create.
 
+    Once all of the objects are deployed and have a green check mark, the two target OCP clusters have been modified.
+
+    ![cluster-configs](https://raw.githubusercontent.com/mmondics/media/main/images/cluster-configs.png)
 
 
 ## Wrap Up
