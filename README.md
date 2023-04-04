@@ -345,7 +345,7 @@ For this demo, you do not need to make any code changes. A minor code change has
     ```yaml
         - name: parksmap
           image: >-
-            quay.io/mmondics/national-parks-frontend:latest
+            quay.io/mmondics/national-parks-frontend:v2-update
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -353,7 +353,11 @@ For this demo, you do not need to make any code changes. A minor code change has
 
     When you are done editing the file, commit and push the update.
 
-1. Navigate back to your RHACM topology view for the `national-parks-multiarch` Application and find the Pod named `parksmap`.
+1. By default, RHACM will reconcile the deployed resources with the Git repo every 3 minutes. To speed this process up, click the `sync` button in the RHACM application page on the Overview tab.
+
+    ![rhacm-sync](images/rhacm-sync.png)
+
+2. Navigate back to your RHACM topology view for the `national-parks-multiarch` Application and find the Pod named `parksmap`.
 
     Depending how quickly you navigated back to the topology, you might catch the `parksmap` Pod with a warning symbol on it, indicating that there is an issue. If you don't catch it, here is what it looks like:
 
