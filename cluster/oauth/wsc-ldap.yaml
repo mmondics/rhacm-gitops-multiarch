@@ -1,0 +1,27 @@
+# Using this OAuth YAML file requires that you have a properly populated secret named ldap-bind-password-wscldap in the openshift-config project. This secret should contain the correct bindPassword to connect to the WSC LDAP server.
+---
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - ldap:
+      attributes:
+        email: []
+        id:
+        - dn
+        name:
+        - cn
+        preferredUsername:
+        - uid
+      bindDN: uid=zz-rhosz1-prod-oc-console,ou=bind-ids,dc=wsc,dc=ibm
+      bindPassword:
+        name: ldap-bind-password-wscldap
+      insecure: true
+      url: ldap://192.168.176.6:389/dc=wsc,dc=ibm?uid?sub?(objectclass=top)
+    mappingMethod: claim
+    name: ldap-ats-wscdmz-wfwfsldapcl01
+    type: LDAP
+  tokenConfig:
+    accessTokenMaxAgeSeconds: 172800

@@ -101,25 +101,29 @@ This demonstration assumes you will install RHACM on an OpenShift on x86 cluster
 
 1. Provide a distinguishable name for the managed IBM zSystems cluster. 
 
-    For example, because the IBM zSystems cluster used when developing this demo is named `atsocpd2`, a distinguishable name would be `atsocpd2-s390x`.
+    For example, because the IBM zSystems cluster used when developing this demo is named `atsocpd1`, a distinguishable name would be `atsocpd1-s390x`.
 
-1. Next, select Run import commands manually for the Import mode.
+1. Next, select "Enter your server URL and API token for the existing cluster" for the Import mode.
 
-    There are other ways to import a cluster as well, with a server URL and token or a Kubeconfig, but the end result will be the same.
+    There are other ways to import a cluster as well, but the end result will be the same.
+
+1. Enter your server URL. This can be found in the web console overview page, or by entering `oc cluster-info` in a command line while connected to the cluster.
+
+2. Enter an API token. This can be found in the OCP web console with the "Copy login command" option under your username in the top right of the page. Alternatively, you can enter `oc whoami -t` when connected via a command line.
 
 1. Click the next button.
 
-1. Skip the automation page. 
+4. Skip the automation page. 
 
     As mentioned in a previous section, RHACM supports the use of Ansible playbooks to run at different stages of the cluster lifecycle. This integration allows for customization or remediation of OpenShift clusters using Ansible playbooks. This is outside the scope of this demonstration, however cool it is.
 
-1. On the Review page, click the Generate command button.
+5. On the Review page, click the Generate command button.
 
     You will be taken to a new page for the yet-to-be imported OpenShift on IBM zSystems cluster. 
 
-1. Log in to your managed OpenShift on IBM zSystems cluster using the `oc` command line. 
+6. Log in to your managed OpenShift on IBM zSystems cluster using the `oc` command line. 
 
-1. Click the Copy command button from the RHACM console, and paste it into your CLI session where you are logged into OpenShift.
+7. Click the Copy command button from the RHACM console, and paste it into your CLI session where you are logged into OpenShift.
 
     This will paste a *quite* long command made up of base64 encoded information.
 
@@ -402,14 +406,14 @@ What are some infrastructure configurations we could manage with RHACM?
 - Jobs and CronJobs
 - Use your imagination...
 
-THe list goes on and on. Because we configure these infrastructure components with YAML, we can simply store that YAML in Git and deploy it the same way.
+The list goes on and on. Because we configure these infrastructure components with YAML, we can simply store that YAML in Git and deploy it the same way.
 
 1. Create a new Application (Subscription) in RHACM with the following parameters:
 
     - Name: `cluster-configs`
     - Namespace: `cluster-configs-rhacm`
     - Repository type: `Git`
-    - URL: `https://github.com/mmondics/openshift-gitops-getting-started`
+    - URL: `https://github.com/mmondics/rhacm-gitops-multiarch`
     - Branch: `main`
     - Path: `cluster/console`
     - Label: `demo`
